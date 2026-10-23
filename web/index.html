@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#171a1e">
+  <title>OpenBand Radio</title>
+  <style>
+    :root { color-scheme: dark; font: 15px/1.5 system-ui, sans-serif; background:#111418; color:#edf0f3; }
+    body { margin:0; min-height:100vh; display:grid; place-items:center; padding:24px; box-sizing:border-box; }
+    main { width:min(560px,100%); background:#1a1e23; border:1px solid #303740; border-radius:10px; padding:24px; box-sizing:border-box; }
+    h1 { margin:0 0 6px; letter-spacing:.08em; font-size:1.4rem; }
+    p { color:#aab2bc; }
+    label { display:block; margin:14px 0 5px; color:#c7cdd4; }
+    input,select,button { width:100%; box-sizing:border-box; padding:11px; border:1px solid #3a424c; border-radius:5px; background:#121519; color:inherit; font:inherit; }
+    button { cursor:pointer; background:#285944; border:0; font-weight:700; margin-top:16px; }
+    button:disabled { opacity:.5; cursor:not-allowed; }
+    #status { padding:10px; background:#121519; border-radius:5px; margin-top:16px; }
+    small { color:#9ca5af; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>OPENBAND</h1>
+    <p>A virtual radio room. This early browser client currently provides the interface and connection status only.</p>
+    <label for="callsign">Callsign</label>
+    <input id="callsign" maxlength="32" value="Operator" autocomplete="nickname">
+    <label for="room">Room</label>
+    <input id="room" maxlength="48" pattern="[A-Za-z0-9_-]+" value="general">
+    <label for="channel">Virtual channel</label>
+    <select id="channel">
+      <option>General</option><option>Dispatch</option><option>Tactical 1</option><option>Tactical 2</option><option>Operations</option>
+    </select>
+    <button id="connect">Check server</button>
+    <div id="status" role="status">Not connected</div>
+    <small>Do not enter passwords or sensitive information. Voice transport and room authentication are not ready yet.</small>
+  </main>
+  <script type="module">
+    const status = document.querySelector("#status");
+    document.querySelector("#connect").addEventListener("click", async () => {
+      status.textContent = "Checking server…";
+      try {
+        const response = await fetch("/health", { cache: "no-store" });
+        if (!response.ok) throw new Error("HTTP " + response.status);
+        const data = await response.json();
+        status.textContent = data.app + " server is reachable · " + data.stage;
+      } catch (error) {
+        status.textContent = "Could not reach /health. Deploy the Cloudflare Worker or configure the API endpoint.";
+      }
+    });
+  </script>
+</body>
+</html>

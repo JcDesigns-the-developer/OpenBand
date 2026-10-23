@@ -1,0 +1,28 @@
+# CMake / C++
+build/
+cmake-build-*/
+CMakeFiles/
+CMakeCache.txt
+compile_commands.json
+*.user
+*.suo
+*.obj
+*.o
+*.dll
+*.so
+*.dylib
+*.exe
+
+# Node / Wrangler
+node_modules/
+.wrangler/
+.dev.vars
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -2,6 +2,10 @@ name = "openband"
 main = "src/worker.js"
 compatibility_date = "2026-10-23"
 
+[assets]
+directory = "../web"
+binding = "ASSETS"
+
 [[durable_objects.bindings]]
 name = "ROOMS"
 class_name = "OpenBandRoom"

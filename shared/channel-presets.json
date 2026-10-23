@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "channels": [
+    { "id": "general", "name": "General", "label": "VIRTUAL CH 01", "mode": "voice" },
+    { "id": "dispatch", "name": "Dispatch", "label": "VIRTUAL CH 02", "mode": "voice" },
+    { "id": "tactical-1", "name": "Tactical 1", "label": "VIRTUAL CH 03", "mode": "voice" },
+    { "id": "tactical-2", "name": "Tactical 2", "label": "VIRTUAL CH 04", "mode": "voice" },
+    { "id": "operations", "name": "Operations", "label": "VIRTUAL CH 05", "mode": "voice" }
+  ]
+}

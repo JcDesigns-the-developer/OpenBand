@@ -30,6 +30,7 @@ export default {
       return env.ROOMS.get(id).fetch(new Request("https://internal/list"));
     }
 
+    if (env.ASSETS) return env.ASSETS.fetch(request);
     return json({ error: "Not found" }, 404);
   }
 };

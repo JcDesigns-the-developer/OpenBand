@@ -21,7 +21,7 @@ class MainWindow final : public QMainWindow
     Q_OBJECT
 public:
     explicit MainWindow(QWidget *parent = nullptr);
-    ~MainWindow() override = default;
+    ~MainWindow() override;
 
 protected:
 #ifdef Q_OS_WIN
@@ -33,6 +33,8 @@ private slots:
     void togglePtt();
     void updateChannelLabel();
     void saveSettings();
+    void globalPttDown();
+    void globalPttUp();
 
 private:
     void buildUi();

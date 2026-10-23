@@ -92,7 +92,7 @@ export class OpenBandRoom {
     const cleanup = () => this.removePeer(peerId);
     server.addEventListener("close", cleanup);
     server.addEventListener("error", cleanup);
-    return new Response(client, { status: 101, webSocket: client });
+    return new Response(null, { status: 101, webSocket: client });
   }
 
   removePeer(peerId) {

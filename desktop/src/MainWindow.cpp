@@ -12,6 +12,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QMessageBox>
+#include <QMetaObject>
 #include <QPushButton>
 #include <QSettings>
 #include <QSlider>
@@ -21,6 +22,25 @@
 #ifdef Q_OS_WIN
 #define NOMINMAX
 #include <windows.h>
+
+namespace {
+MainWindow *g_openBandWindow = nullptr;
+HHOOK g_keyboardHook = nullptr;
+
+LRESULT CALLBACK openBandKeyboardHook(int code, WPARAM message, LPARAM data)
+{
+    if (code == HC_ACTION && g_openBandWindow) {
+        const auto *key = reinterpret_cast<KBDLLHOOKSTRUCT *>(data);
+        if (key->vkCode == VK_RCONTROL && !(key->flags & LLKHF_INJECTED)) {
+            if (message == WM_KEYDOWN || message == WM_SYSKEYDOWN)
+                QMetaObject::invokeMethod(g_openBandWindow, "globalPttDown", Qt::QueuedConnection);
+            else if (message == WM_KEYUP || message == WM_SYSKEYUP)
+                QMetaObject::invokeMethod(g_openBandWindow, "globalPttUp", Qt::QueuedConnection);
+        }
+    }
+    return CallNextHookEx(g_keyboardHook, code, message, data);
+}
+}
 #endif
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
@@ -30,12 +50,27 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     buildUi();
     loadPresets();
     registerHotkeys();
+#ifdef Q_OS_WIN
+    g_openBandWindow = this;
+    g_keyboardHook = SetWindowsHookExW(WH_KEYBOARD_LL, openBandKeyboardHook, GetModuleHandleW(nullptr), 0);
+    if (!g_keyboardHook) statusLabel_->setText("F5 is enabled, but global PTT hook could not be installed.");
+#endif
 
     QSettings settings;
     callsignEdit_->setText(settings.value("callsign", "Operator").toString());
     volumeSlider_->setValue(settings.value("volume", 75).toInt());
     squelchSlider_->setValue(settings.value("squelch", 20).toInt());
     alwaysOnTop_->setChecked(settings.value("alwaysOnTop", false).toBool());
+}
+
+MainWindow::~MainWindow()
+{
+#ifdef Q_OS_WIN
+    if (g_keyboardHook) UnhookWindowsHookEx(g_keyboardHook);
+    g_keyboardHook = nullptr;
+    g_openBandWindow = nullptr;
+    UnregisterHotKey(reinterpret_cast<HWND>(winId()), 1);
+#endif
 }
 
 void MainWindow::buildUi()
@@ -165,6 +200,16 @@ void MainWindow::toggleOverlay()
         resize(520, 430);
         show();
     }
+}
+
+void MainWindow::globalPttDown()
+{
+    setPtt(true);
+}
+
+void MainWindow::globalPttUp()
+{
+    setPtt(false);
 }
 
 void MainWindow::togglePtt()

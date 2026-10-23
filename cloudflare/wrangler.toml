@@ -1,0 +1,16 @@
+name = "openband"
+main = "src/worker.js"
+compatibility_date = "2026-10-23"
+
+[[durable_objects.bindings]]
+name = "ROOMS"
+class_name = "OpenBandRoom"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["OpenBandRoom"]
+
+[vars]
+APP_NAME = "OpenBand"
+# Configure WEB_ORIGIN to your deployed frontend origin before production.
+WEB_ORIGIN = "*"
